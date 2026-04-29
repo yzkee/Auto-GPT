@@ -10510,7 +10510,7 @@
           },
           "tier": {
             "$ref": "#/components/schemas/SubscriptionTier",
-            "default": "BASIC"
+            "default": "NO_TIER"
           },
           "reset_cost": {
             "type": "integer",
@@ -16229,7 +16229,14 @@
         "properties": {
           "tier": {
             "type": "string",
-            "enum": ["BASIC", "PRO", "MAX", "BUSINESS", "ENTERPRISE"],
+            "enum": [
+              "NO_TIER",
+              "BASIC",
+              "PRO",
+              "MAX",
+              "BUSINESS",
+              "ENTERPRISE"
+            ],
             "title": "Tier"
           },
           "monthly_cost": { "type": "integer", "title": "Monthly Cost" },
@@ -16248,9 +16255,23 @@
             "type": "integer",
             "title": "Proration Credit Cents"
           },
+          "has_active_stripe_subscription": {
+            "type": "boolean",
+            "title": "Has Active Stripe Subscription",
+            "description": "True when the user has an active/trialing Stripe subscription. The frontend uses this to branch upgrade UX: modify-in-place + saved-card auto-charge when True, redirect to Stripe Checkout when False.",
+            "default": false
+          },
+          "current_period_end": {
+            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "title": "Current Period End",
+            "description": "Unix timestamp of the active subscription's current_period_end. Used to show the date Stripe will issue the next invoice (with prorated upgrade charges, if any). None when no active sub."
+          },
           "pending_tier": {
             "anyOf": [
-              { "type": "string", "enum": ["BASIC", "PRO", "MAX", "BUSINESS"] },
+              {
+                "type": "string",
+                "enum": ["NO_TIER", "BASIC", "PRO", "MAX", "BUSINESS"]
+              },
               { "type": "null" }
             ],
             "title": "Pending Tier"
@@ -16280,7 +16301,7 @@
       },
       "SubscriptionTier": {
         "type": "string",
-        "enum": ["BASIC", "PRO", "MAX", "BUSINESS", "ENTERPRISE"],
+        "enum": ["NO_TIER", "BASIC", "PRO", "MAX", "BUSINESS", "ENTERPRISE"],
         "title": "SubscriptionTier",
         "description": "Subscription tiers with increasing cost allowances.\n\nMirrors the ``SubscriptionTier`` enum in ``schema.prisma``.\nOnce ``prisma generate`` is run, this can be replaced with::\n\n    from prisma.enums import SubscriptionTier"
       },
@@ -16288,7 +16309,7 @@
         "properties": {
           "tier": {
             "type": "string",
-            "enum": ["BASIC", "PRO", "MAX", "BUSINESS"],
+            "enum": ["NO_TIER", "BASIC", "PRO", "MAX", "BUSINESS"],
             "title": "Tier"
           },
           "success_url": {
